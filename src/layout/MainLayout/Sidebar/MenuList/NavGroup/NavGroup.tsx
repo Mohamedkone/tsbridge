@@ -1,0 +1,61 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import PropTypes from "prop-types";
+
+// material-ui
+import { List, Typography } from "@mui/material";
+
+// project imports
+import NavItem from "../NavItem/NavItems";
+import NavCollapse from "../NavCollapse/NavCollapse";
+
+// ==============================|| SIDEBAR MENU LIST GROUP ||============================== //
+
+const NavGroup = ({ item }:any) => {
+
+	// menu list collapse & items
+	const items = item.children?.map((menu:any) => {
+		switch (menu.type) {
+			case "collapse":
+				return <NavCollapse key={menu.id} menu={menu} level={1} />;
+			case "item":
+				return <NavItem key={menu.id} item={menu} level={1} />;
+			default:
+				return (
+					<Typography key={menu.id} variant="h6" color="error" align="center">
+						Menu Items Error
+					</Typography>
+				);
+		}
+	});
+
+	return (
+		<>
+			<List
+			sx={{display:{xs:'flex', md:"block"}}}
+				// subheader={
+				// 	item.title && (
+				// 		<Typography variant="caption" sx={{ ...theme.typography.menuCaption }} display="block" gutterBottom>
+				// 			{item.title}
+				// 			{item.caption && (
+				// 				<Typography variant="caption" sx={{ ...theme.typography.subMenuCaption }} display="block" gutterBottom>
+				// 					{item.caption}
+				// 				</Typography>
+				// 			)}
+				// 		</Typography>
+				// 	)
+				// }
+			>
+				{items}
+			</List>
+
+			{/* group divider */}
+			{/* <Divider sx={{ mt: 0.25, mb: 1.25 }} /> */}
+		</>
+	);
+};
+
+NavGroup.propTypes = {
+	item: PropTypes.object
+};
+
+export default NavGroup;
