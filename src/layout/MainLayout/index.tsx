@@ -163,7 +163,7 @@ const MainLayout = () => {
 	// return<></>
 
 	const accessRoom = () => {
-		window.location.href= "http://localhost:3002"
+		window.location.href= import.meta.env.VITE_ROOM
 	}
 
 	return (

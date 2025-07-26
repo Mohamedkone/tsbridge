@@ -7,6 +7,7 @@ interface AuthContextType {
     myInfo: UserInfo | undefined; // Replace 'any' with the appropriate type if known
     setMyInfo: Dispatch<SetStateAction<UserInfo | undefined>>; // Replace 'any' with the appropriate type if known
     api: string | undefined;
+    appLink: string | undefined;
     dropLink: string | undefined;
     nodesSrv: string | undefined;
     pageTitle: string;
@@ -20,6 +21,7 @@ export const AuthContext = createContext<AuthContextType>({
     myInfo: undefined,
     setMyInfo: () => {}  ,              
     api: "",
+    appLink: "",
     dropLink: "",
     nodesSrv: "",
     pageTitle: "",

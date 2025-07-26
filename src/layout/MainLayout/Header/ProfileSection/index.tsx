@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useRef, useEffect, useContext } from "react";
-
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 // material-ui
 import { useTheme } from "@mui/material/styles";
@@ -16,162 +13,237 @@ import {
 	ListItemText,
 	Popper,
 	Stack,
-	Typography
+	Typography,
+	Card,
+	CardContent,
+	Grow,
+	Paper
 } from "@mui/material";
-
-// third-party
-import PerfectScrollbar from "react-perfect-scrollbar";
-
-// project imports
-import MainCard from "../../../../ui-component/cards/MainCard";
-import Transitions from "../../../../ui-component/extended/Transitions";
 
 // assets
 import { IconLogout, IconSettings } from "@tabler/icons-react";
 import { AuthContext } from "../../../../context/AuthContext";
 import { useAuth0 } from "@auth0/auth0-react";
 
-// ==============================|| PROFILE MENU ||============================== //
+// TypeScript interfaces
+interface UserData {
+	uName: string;
+	uRole: string;
+	uAvatar: string;
+}
 
-const ProfileSection = ({userData}:any) => {
+interface ProfileSectionProps {
+	userData: UserData;
+}
+
+// ==============================|| NEW PROFILE MENU ||============================== //
+
+const ProfileSection: React.FC<ProfileSectionProps> = ({ userData }) => {
 	const theme = useTheme();
-	const customization = useSelector((state) => state.customization);
 	const navigate = useNavigate();
-	const { handleLogout } = useContext(AuthContext)
-	const { user } = useAuth0()
+	const { handleLogout } = useContext(AuthContext);
+	const { user } = useAuth0();
 
+	const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+	const [open, setOpen] = useState<boolean>(false);
+	const anchorRef = useRef<HTMLDivElement>(null);
 
-	const [selectedIndex, setSelectedIndex] = useState(-1);
-	const [open, setOpen] = useState(false);
-	/**
-	 * anchorRef is used on different componets and specifying one type leads to other components throwing an error
-	 * */
-	const anchorRef = useRef(null);
-
-	const handleClose = (event) => {
-		if (anchorRef.current && anchorRef.current.contains(event.target)) {
+	// Handle closing the menu
+	const handleClose = (event: Event | React.SyntheticEvent) => {
+		if (anchorRef.current && anchorRef.current.contains(event.target as Node)) {
 			return;
 		}
 		setOpen(false);
 	};
 
-	const handleListItemClick = (event, index, route = "") => {
+	// Handle menu item clicks
+	const handleListItemClick = (
+		event: React.MouseEvent<HTMLDivElement>, 
+		index: number, 
+		route?: string
+	) => {
 		setSelectedIndex(index);
 		handleClose(event);
 
-		if (route && route !== "") {
+		if (route) {
 			navigate(route);
 		}
 	};
+
+	// Toggle menu open/close
 	const handleToggle = () => {
 		setOpen((prevOpen) => !prevOpen);
 	};
 
+	// Focus management
 	const prevOpen = useRef(open);
 	useEffect(() => {
 		if (prevOpen.current === true && open === false) {
-			anchorRef.current.focus();
+			if (anchorRef.current) {
+				anchorRef.current.focus();
+			}
 		}
-
 		prevOpen.current = open;
 	}, [open]);
+
 	return (
 		<>
+			{/* Profile Avatar Button */}
 			<Avatar
 				src={userData.uAvatar}
 				sx={{
-					...theme.typography.mediumAvatar,
 					cursor: "pointer",
-					width:40,
-					height:40,
-					border:"1px solid #000"
+					width: 40,
+					height: 40,
+					border: "1px solid #000",
+					transition: "all 0.2s ease-in-out",
+					"&:hover": {
+						transform: "scale(1.05)",
+						boxShadow: theme.shadows[4]
+					}
 				}}
 				ref={anchorRef}
-				aria-controls={open ? "menu-list-grow" : undefined}
+				aria-controls={open ? "profile-menu" : undefined}
 				aria-haspopup="true"
-				color="inherit"
 				onClick={handleToggle}
 			/>
 
+			{/* Menu Popper */}
 			<Popper
-				placement="bottom-end"
+				id="profile-menu"
 				open={open}
 				anchorEl={anchorRef.current}
-				role={undefined}
+				placement="bottom-end"
 				transition
-				disablePortal={[theme.breakpoints.up("md")]?false:true}
-				popperOptions={{
-					modifiers: [
-						{
-							name: "offset",
-							options: {
-								offset: [0, 14]
-							}
+				disablePortal
+				sx={{ zIndex: 1300 }}
+				modifiers={[
+					{
+						name: "offset",
+						options: {
+							offset: [0, 14]
 						}
-					]
-				}}
+					}
+				]}
 			>
 				{({ TransitionProps }) => (
-					<Transitions in={open} {...TransitionProps}>
+					<Grow
+						{...TransitionProps}
+						timeout={200}
+						style={{
+							transformOrigin: "top right"
+						}}
+					>
+						<Paper elevation={8}>
 							<ClickAwayListener onClickAway={handleClose}>
-								<MainCard  border={false} elevation={16} content={false} boxShadow shadow={theme.shadows[16]}>
-									<Box sx={{ p: 2 }}>
-										<Stack>
-											<Stack direction="row" spacing={0.5} alignItems="center">
-												<Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
+								<Card
+									sx={{
+										minWidth: 300,
+										maxWidth: 350,
+										border: "none",
+										boxShadow: theme.shadows[8],
+										borderRadius: 2
+									}}
+								>
+									{/* User Info Header */}
+									<CardContent sx={{ p: 2, pb: 1 }}>
+										<Stack spacing={1}>
+											<Stack direction="row" spacing={1} alignItems="center">
+												<Typography 
+													variant="h6" 
+													sx={{ 
+														fontWeight: 500,
+														color: theme.palette.text.primary
+													}}
+												>
 													{userData.uName}
 												</Typography>
 											</Stack>
-											<Typography variant="subtitle2">{userData.uRole}</Typography>
-										</Stack>
-									</Box>
-									<PerfectScrollbar style={{ height: "100%", maxHeight: "calc(100vh - 250px)", overflowX: "hidden" }}>
-										<Box sx={{ p: 2 }}>
-											<List
-												component="nav"
-												sx={{
-													width: "100%",
-													maxWidth: 350,
-													minWidth: 300,
-													backgroundColor: "#FFF",
-													borderRadius: "10px",
-													[theme.breakpoints.down("md")]: {
-														minWidth: "100%"
-													},
-													"& .MuiListItemButton-root": {
-														mt: 0.5
-													}
+											<Typography 
+												variant="body2" 
+												sx={{ 
+													color: theme.palette.text.secondary,
+													fontSize: "0.875rem"
 												}}
 											>
-												{!user?.isGuest ? <ListItemButton
-													sx={{ borderRadius: `${customization.borderRadius}px` }}
+												{userData.uRole}
+											</Typography>
+										</Stack>
+									</CardContent>
+
+									{/* Menu Items */}
+									<Box sx={{ px: 1, pb: 1 }}>
+										<List component="nav" sx={{ py: 0 }}>
+											{/* Account Settings - Only show if not guest */}
+											{!user?.isGuest && (
+												<ListItemButton
+													sx={{
+														borderRadius: 1,
+														mx: 1,
+														mb: 0.5,
+														"&:hover": {
+															backgroundColor: theme.palette.action.hover
+														},
+														"&.Mui-selected": {
+															backgroundColor: theme.palette.action.selected
+														}
+													}}
 													selected={selectedIndex === 0}
 													onClick={(event) => handleListItemClick(event, 0, "account")}
 												>
-													<ListItemIcon>
-														<IconSettings stroke={1.5} size="1.3rem" />
+													<ListItemIcon sx={{ minWidth: 36 }}>
+														<IconSettings 
+															stroke={1.5} 
+															size="1.25rem" 
+															color={theme.palette.text.secondary}
+														/>
 													</ListItemIcon>
-													<ListItemText primary={<Typography variant="body2">Account Settings</Typography>} />
+													<ListItemText 
+														primary={
+															<Typography variant="body2">
+																Account Settings
+															</Typography>
+														} 
+													/>
 												</ListItemButton>
-												:
-												null
-												}
-												<ListItemButton
-													sx={{ borderRadius: `${customization.borderRadius}px` }}
-													selected={selectedIndex === 4}
-													onClick={()=>handleLogout()}
-												>
-													<ListItemIcon>
-														<IconLogout stroke={1.5} size="1.3rem" />
-													</ListItemIcon>
-													<ListItemText primary={<Typography variant="body2">Logout</Typography>} />
-												</ListItemButton>
-											</List>
-										</Box>
-									</PerfectScrollbar>
-								</MainCard>
+											)}
+
+											{/* Logout */}
+											<ListItemButton
+												sx={{
+													borderRadius: 1,
+													mx: 1,
+													color: theme.palette.error.main,
+													"&:hover": {
+														backgroundColor: theme.palette.error.light + "20"
+													}
+												}}
+												onClick={() => handleLogout()}
+											>
+												<ListItemIcon sx={{ minWidth: 36 }}>
+													<IconLogout 
+														stroke={1.5} 
+														size="1.25rem" 
+														color={theme.palette.error.main}
+													/>
+												</ListItemIcon>
+												<ListItemText 
+													primary={
+														<Typography 
+															variant="body2"
+															sx={{ color: theme.palette.error.main }}
+														>
+															Logout
+														</Typography>
+													} 
+												/>
+											</ListItemButton>
+										</List>
+									</Box>
+								</Card>
 							</ClickAwayListener>
-					</Transitions>
+						</Paper>
+					</Grow>
 				)}
 			</Popper>
 		</>

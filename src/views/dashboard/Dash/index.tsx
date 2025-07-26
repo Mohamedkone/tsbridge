@@ -19,7 +19,11 @@ import axios from 'axios';
 
 export default function Dashboard() {
   const {setPageTitle} = useContext(AuthContext)
-  const {myInfo, api} = useContext(AuthContext)
+  const {
+    myInfo,
+    api,
+    // appLink
+  } = useContext(AuthContext)
   const [inteList, setInteList] = useState<any[]>([])
   const [liveList, setLiveList] = useState([])
   const [bridgeCount, setBridgeCount] = useState(0)
@@ -59,7 +63,7 @@ export default function Dashboard() {
         <Typography width={"10ch"}>{trimExp}</Typography>
         <Typography flexGrow={1} fontWeight={"bold"}>{x.alias}</Typography>
         {/* <Link 
-          href={`http://localhost:3000/bridge?panel=Live&${x.id}`}
+          href={`${appLink}/bridge?panel=Live&${x.id}`}
           color='primary'
           >
           View

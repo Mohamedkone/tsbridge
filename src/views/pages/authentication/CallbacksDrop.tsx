@@ -7,7 +7,7 @@ import { AuthContext } from "../../../context/AuthContext";
 
 const CallbacksDrop = () => {
   const navigate = useNavigate();
-  const {myInfo} = useContext(AuthContext)
+  const {myInfo, appLink, api} = useContext(AuthContext)
 
   useEffect(() => {
     if(myInfo?.id){
@@ -36,11 +36,11 @@ const CallbacksDrop = () => {
 
   const exchangeCodeForTokens = async (code:any ,userId:any) => {
     try {
-      const redirectUri = "http://localhost:3000/callbacksdrop";
+      const redirectUri = `${appLink}/callbacksdrop`;
   
       // console.log(userId,code)
       // Send the authorization code to the backend
-      await axios.post("http://localhost:3001/dp-api-storages", {
+      await axios.post(`${api}/dp-api-storages`, {
         userId: userId,
         code: code,
         redirectUri:redirectUri,

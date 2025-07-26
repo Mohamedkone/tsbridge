@@ -5,11 +5,11 @@ import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 
 const PricingTable = ({currentPlan}:any) => {
-  const {myInfo} = useContext(AuthContext)
+  const {myInfo, api} = useContext(AuthContext)
   const [planList,setPlanList] = useState<any[]>([])
   useEffect(()=>{
     const fetch =async()=>{
-      await axios.get(`http://localhost:3001/plans`).then((res)=>{
+      await axios.get(`${api}/plans`).then((res)=>{
         setPlanList(res.data)
         // console.log(myInfo)
     })

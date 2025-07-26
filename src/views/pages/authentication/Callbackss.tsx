@@ -7,7 +7,7 @@ import { AuthContext } from "../../../context/AuthContext";
 
 const Callbackss = () => {
   const navigate = useNavigate();
-  const { myInfo } = useContext(AuthContext);
+  const { myInfo, appLink, api } = useContext(AuthContext);
 
   useEffect(() => {
     if (myInfo?.id) {
@@ -36,10 +36,10 @@ const Callbackss = () => {
 
   const exchangeCodeForTokens = async (code:any, userId:any) => {
     try {
-      const redirectUri = "http://localhost:3000/callbackss";
+      const redirectUri = `${appLink}/callbackss`;
 
       // Send the authorization code to the backend
-      await axios.post("http://localhost:3001/gd-api-storages", {
+      await axios.post(`${api}/gd-api-storages`, {
         userId: userId,
         code: code,
         redirectUri: redirectUri,

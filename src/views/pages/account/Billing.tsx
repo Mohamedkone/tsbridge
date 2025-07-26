@@ -22,7 +22,7 @@ import PricingTable from "../../../ui-component/PricingTable";
 import PriceModal from "../../../ui-component/modals/PriceModal";
 
 const Billing = () => {
-    const {myInfo} = useContext(AuthContext)
+    const {myInfo, api} = useContext(AuthContext)
     const [plan, setPlan] = useState<any>({})
     const [list, setList] = useState([])
     const [mOpen, setMOpen] = useState(false)
@@ -36,10 +36,10 @@ const Billing = () => {
 
     useEffect(()=>{
         if(!myInfo) return
-        axios.get(`http://localhost:3001/plans/${myInfo?.plan}`).then((res)=>{
+        axios.get(`${api}/plans/${myInfo?.plan}`).then((res)=>{
             setPlan({id: res.data.id,plan:res.data.plan})
         })
-        axios.get(`http://localhost:3001/billings/${myInfo.id}`).then((res)=>{
+        axios.get(`${api}/billings/${myInfo.id}`).then((res)=>{
             setList(res.data)
             console.log(res.data)
         })

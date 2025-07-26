@@ -47,7 +47,7 @@ const Storage = ({ setSelectedTab }: StorageProps) => {
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
   const [existingStorage, setExistingStorage] = useState<StorageItem[] | null>(null);
   const [filteredList, setFilteredList] = useState<StorageItem[] | null>(null);
-  const { api, myInfo } = useContext(AuthContext);
+  const { api, myInfo, appLink } = useContext(AuthContext);
   const [formData, setFormData] = useState<FormDataType>({});
   const [useSignedUrl, setUseSignedUrl] = useState<boolean>(false);
   const [expanded, setExpanded] = useState<StorageItem | null>(null);
@@ -60,7 +60,7 @@ const Storage = ({ setSelectedTab }: StorageProps) => {
   // OAuth handlers
   const connectGoogleDrive = () => {
     const clientId = "304417414909-h29cj5ubvjppk6j2ftdj67otsp66rhqk.apps.googleusercontent.com";
-    const redirectUri = `http://localhost:3000/callbackss`;
+    const redirectUri = `${appLink}/callbackss`;
     const scope = "https://www.googleapis.com/auth/drive.file";
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&access_type=offline&prompt=consent`;
     window.location.href = authUrl;
@@ -68,7 +68,7 @@ const Storage = ({ setSelectedTab }: StorageProps) => {
 
   const connectDropbox = () => {
     const clientId = "hvrwt9jed00sv3v";
-    const redirectUri = `http://localhost:3000/callbacksdrop`;
+    const redirectUri = `${appLink}/callbacksdrop`;
     const authUrl = `https://www.dropbox.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&token_access_type=offline`;
     window.location.href = authUrl;
   };
@@ -81,7 +81,7 @@ const Storage = ({ setSelectedTab }: StorageProps) => {
       const [apiStorages, dbStorages, dsRes] = await Promise.all([
         axios.get(`${api}/api-storages/${myInfo?.id}`),
         axios.get(`${api}/mystorages/${myInfo?.id}`),
-        axios.get(`http://localhost:3001/ds/${myInfo?.id}`),
+        axios.get(`${api}/ds/${myInfo?.id}`),
       ]);
 
       apiStorages.data.forEach((x: any) => {

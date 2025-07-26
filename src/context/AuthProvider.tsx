@@ -16,6 +16,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [compSettings, setCompSettings] = useState<CompanySettings | undefined>(); // Replace 'any' with the appropriate type if known
     const { logout } = useAuth0();
     const api = import.meta.env.VITE_API;
+    const appLink = import.meta.env.VITE_APP;
     const dropLink = import.meta.env.VITE_DROP;
     const nodesSrv = import.meta.env.VITE_NODES;
 
@@ -31,7 +32,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     axios.defaults.headers.common['authorization'] = cookies["auth-r-key"];
 
     return (
-        <AuthContext.Provider value={{ handleLogout, myInfo, setMyInfo, api, dropLink, nodesSrv, pageTitle, setPageTitle, compSettings, setCompSettings }}>
+        <AuthContext.Provider value={{ appLink, handleLogout, myInfo, setMyInfo, api, dropLink, nodesSrv, pageTitle, setPageTitle, compSettings, setCompSettings }}>
             {children}
         </AuthContext.Provider>
     );
