@@ -23,7 +23,7 @@ import {
 // assets
 import { IconLogout, IconSettings } from "@tabler/icons-react";
 import { AuthContext } from "../../../../context/AuthContext";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "@clerk/clerk-react";
 
 // TypeScript interfaces
 interface UserData {
@@ -41,8 +41,7 @@ interface ProfileSectionProps {
 const ProfileSection: React.FC<ProfileSectionProps> = ({ userData }) => {
 	const theme = useTheme();
 	const navigate = useNavigate();
-	const { handleLogout } = useContext(AuthContext);
-	const { user } = useAuth0();
+	const { signOut } = useAuth();
 
 	const [selectedIndex, setSelectedIndex] = useState<number>(-1);
 	const [open, setOpen] = useState<boolean>(false);
@@ -175,7 +174,6 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ userData }) => {
 									<Box sx={{ px: 1, pb: 1 }}>
 										<List component="nav" sx={{ py: 0 }}>
 											{/* Account Settings - Only show if not guest */}
-											{!user?.isGuest && (
 												<ListItemButton
 													sx={{
 														borderRadius: 1,
@@ -206,7 +204,6 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ userData }) => {
 														} 
 													/>
 												</ListItemButton>
-											)}
 
 											{/* Logout */}
 											<ListItemButton
@@ -218,7 +215,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ userData }) => {
 														backgroundColor: theme.palette.error.light + "20"
 													}
 												}}
-												onClick={() => handleLogout()}
+												onClick={() => signOut()}
 											>
 												<ListItemIcon sx={{ minWidth: 36 }}>
 													<IconLogout 

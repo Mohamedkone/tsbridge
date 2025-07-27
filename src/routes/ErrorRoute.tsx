@@ -1,18 +1,16 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { Box } from "@mui/system";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 export default function ErrorPage() {
-  const {isAuthenticated, isLoading} = useAuth0()
 	const navigate = useNavigate()
   useEffect(() => {
 	const refreshError = setTimeout(()=>{
-    if(!isLoading && !isAuthenticated) window.location.href = "/"
-    else{
+    // if(!isLoading && !isAuthenticated) window.location.href = "/"
+    // else{
 
       navigate('/', {replace:true})
-    }
+    // }
 	}, 1000)
 
 	return ()=>clearTimeout(refreshError)

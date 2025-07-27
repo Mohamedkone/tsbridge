@@ -46,3 +46,7 @@ export interface LogsType{
   size: string, 
   receivers: any[];
 }
+
+export interface ClerkError {
+  errors?: Array<{ message: string }>;
+}

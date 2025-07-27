@@ -1,5 +1,6 @@
 // assets
 import { IconAccessPoint, IconArrowsJoin } from "@tabler/icons-react";
+import { IconDashboard, IconTransfer, IconUserHexagon } from "@tabler/icons-react";
 
 // constant
 
@@ -11,6 +12,30 @@ const users = {
 	title: "user",
 	type: "group",
 	children: [
+		{
+			id: "admin",
+			title: "Admin",
+			type: "item",
+			url: "/admin",
+			icon: IconUserHexagon,
+			breadcrumbs: false
+		},
+		{
+			id: "default",
+			title: "Dash",
+			type: "item",
+			url: "/",
+			icon: IconDashboard,
+			breadcrumbs: false
+		},
+		{
+			id: "transfers",
+			title: "Logs",
+			type: "item",
+			url: "/transfers",
+			icon: IconTransfer,
+			breadcrumbs: false
+		},
 		{
 			id:"Bridge",
 			title:"Bridge",

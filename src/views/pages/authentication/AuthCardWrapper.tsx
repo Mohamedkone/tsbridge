@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import PropTypes from "prop-types";
 
 // material-ui
@@ -9,7 +8,7 @@ import MainCard from "../../../ui-component/cards/MainCard";
 
 // ==============================|| AUTHENTICATION CARD WRAPPER ||============================== //
 
-const AuthCardWrapper = ({ children, ...other }:any) => (
+const AuthCardWrapper = ({ children, ...other }) => (
 	<MainCard
 		sx={{
 			maxWidth: { xs: 400, lg: 475 },

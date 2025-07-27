@@ -1,8 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// src/App.tsx
 import { useSelector } from "react-redux";
 import { ThemeProvider } from "@mui/material/styles";
-import { CssBaseline, StyledEngineProvider } from "@mui/material";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { CssBaseline, StyledEngineProvider, useMediaQuery, useTheme } from "@mui/material";
+import { 
+  Routes,
+  Route,
+  Navigate
+} from "react-router-dom";
+// import { useContext } from "react";
 
 import themes from "./themes";
 import NavigationScroll from "./layout/NavigationScroll";
@@ -11,33 +17,27 @@ import MainLayout from "./layout/MainLayout";
 import MinimalLayout from "./layout/MinimalLayout/MinimalLayout";
 import ErrorRoute from "./routes/ErrorRoute";
 
-import AuthLogin from "./views/pages/authentication/authentication/Login";
-import CallbackPage from "./views/pages/authentication/CallbackPage";
 import AccountSetting from "./views/pages/account/AccountSetting";
 import Vault from "./views/pages/vault/finder/Vault";
 import Logs from "./views/dashboard/transfers/Logs";
-import { jwtDecode } from "jwt-decode";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "./context/AuthContext";
 import MaintenancePage from "./MaintenancePage";
 import Bridge from "./views/pages/bridge";
 import Dashboard from "./views/dashboard/Dash";
-import Callbackss from "./views/pages/authentication/Callbackss";
-import CallbacksDrop from "./views/pages/authentication/CallbacksDrop";
 import Admin from "./views/dashboard/Admin";
+import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-react";
+import Auth from "./views/pages/authentication/authentication/Auth";
 
-const UnauthenticatedRoutes = () => (
+const UnauthenticatedRoutes = ({isMobile}:{isMobile:boolean}) => (
   <Routes>
     <Route path="/" element={<MinimalLayout />}>
-      <Route index element={<AuthLogin />} />
-      <Route path="login" element={<AuthLogin />} />
-      <Route path="callback" element={<CallbackPage />} />
+      {/* <Route index element={<AuthLogin />} />
+      <Route path="login" element={<AuthLogin />} /> */}
+      <Route index element={<Auth isMobile={isMobile}/>} />
+      <Route path="login" element={<Auth isMobile={isMobile} />} />
       <Route path="*" element={<Navigate to="/" />} />
     </Route>
   </Routes>
 );
-
 
 const AuthenticatedRoutes = () => (
   <Routes>
@@ -48,59 +48,45 @@ const AuthenticatedRoutes = () => (
       <Route path="account" element={<AccountSetting />} />
       <Route path="vault" element={<Vault />} />
       <Route path="bridge">
-      <Route index element={<Bridge />} />
-      <Route path="generate" element={<Bridge />} />
+        <Route index element={<Bridge />} />
+        <Route path="generate" element={<Bridge />} />
       </Route>
-      <Route path="callback" element={<CallbackPage />} />
-      <Route path="callbackss" element={<Callbackss />} />
-      <Route path="callbacksdrop" element={<CallbacksDrop />} />
       <Route path="*" element={<ErrorRoute />} />
     </Route>
   </Routes>
 );
 
-
+// const LoadingSpinner = () => (
+//   <Box
+//     sx={{
+//       display: 'flex',
+//       alignItems: 'center',
+//       justifyContent: 'center',
+//       height: '100vh'
+//     }}
+//   >
+//     <CircularProgress 
+//       size={64}
+//       color="success"
+//       thickness={2}
+//     />
+//   </Box>
+// );
 
 const App = () => {
   const isMaintenanceMode = import.meta.env.VITE_MAINTENANCE_MODE === 'true';
-  const customization = useSelector((state:any) => state.customization);
-  const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
-  const [, setCustomClaim] = useState(null);
-  const { myInfo } = useContext(AuthContext);
-  // eslint-disable-next-line no-unused-vars
-  const [, setRole] = useState<any>(null);
-  useEffect(() => {
-    if (myInfo) {
-      setRole(myInfo?.role);
-      console.log(myInfo)
-    }
-  }, [myInfo]);
+  const customization = useSelector((state: any) => state.customization);
+  const theme = useTheme()
+  const { isLoaded } = useAuth()
+  const isMobile = useMediaQuery(theme.breakpoints.down(1020))
+// console.log(isAuthenticated, user)
 
-  useEffect(() => {
-    const fetchAccessToken = async () => {
-      if (isAuthenticated) {
-        try {
-          const token = await getAccessTokenSilently();
-          const decodedToken = jwtDecode(token);
-          const myClaim = decodedToken['isGuess'];
-          setCustomClaim(myClaim);
-        } catch (error) {
-          console.error('Error decoding token:', error);
-        }
-      }
-    };
-
-    fetchAccessToken();
-  }, [getAccessTokenSilently, isAuthenticated]);
-
-  if( isMaintenanceMode ) {
-  
-    return <MaintenancePage />
-
+  if (isMaintenanceMode) {
+    return <MaintenancePage />;
   }
-
-  if (isLoading) {
-    return <MinimalLayout />;
+  
+  if (!isLoaded) {
+    return <></>;
   }
 
   return (
@@ -108,11 +94,16 @@ const App = () => {
       <ThemeProvider theme={themes(customization)}>
         <CssBaseline />
         <NavigationScroll>
-          {isAuthenticated ? 
+          {/* {(!isAuthenticated && isLoaded) && */}
+          <SignedOut>
+            <UnauthenticatedRoutes isMobile={isMobile} />
+          </SignedOut>
+          {/* } */}
+          {/* {(isAuthenticated && isLoaded) && */}
+          <SignedIn>
             <AuthenticatedRoutes />
-            :
-            <UnauthenticatedRoutes />
-          }
+          </SignedIn>
+          {/* } */}
         </NavigationScroll>
       </ThemeProvider>
     </StyledEngineProvider>

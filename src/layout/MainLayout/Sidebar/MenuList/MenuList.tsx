@@ -5,28 +5,12 @@ import { Typography } from "@mui/material";
 // project imports
 import NavGroup from "./NavGroup/NavGroup";
 import menuItem from "../../../../menu-items/index";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../../../context/AuthContext";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useState } from "react";
 
 // ==============================|| SIDEBAR MENU LIST ||============================== //
 
 const MenuList = () => {
-	const {myInfo} = useContext(AuthContext)
-	const {user} = useAuth0()
-	const [menu, setMenu] = useState<any[]>([])
-
-	useEffect(()=>{
-		if(myInfo?.role) {
-			if(myInfo?.role === "User")setMenu(()=>menuItem.items.filter((d)=>d.id === "user"))
-			else if(myInfo?.role === "Moderator") setMenu(()=>menuItem.items.filter((d)=>d.id === "log" || d.id === "user"))
-			else if(myInfo?.role === "Auditor") setMenu(()=>menuItem.items.filter((d)=>d.id === "admin"))
-			else if(myInfo?.role === "Admin" || myInfo?.role === "Owner") setMenu(()=>menuItem.items.filter((d)=>d.id === "admin" || d.id === "user"))
-		}
-		else if(user?.isGuest){
-			setMenu(()=>menuItem.items.filter((d)=>d.id === "guest"))
-		}
-	}, [myInfo, user])
+	const [menu] = useState<any[]>([...menuItem.items])
 	
 	const navItems = menu.map((item) => {
 		switch (item.type) {

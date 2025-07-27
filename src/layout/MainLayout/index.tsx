@@ -13,10 +13,8 @@ import { drawerWidth } from "../../store/constant";
 
 // assets
 // import { IconChevronRight } from "@tabler/icons-react";
-import { useContext, useEffect, useState } from "react";
-import axios from "axios";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useCookies } from "react-cookie";
+import { useContext, useState } from "react";
+// import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 import ModalClose1Btn from "../../ui-component/modals/ModalClose1Btn";
 import ProfileSection from "./Header/ProfileSection";
@@ -70,12 +68,9 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" && pr
 
 const MainLayout = () => {
 	const theme = useTheme();
-	const { myInfo, setMyInfo, api, pageTitle } = useContext(AuthContext)
-	const { user, isAuthenticated } = useAuth0()
+	const { myInfo, pageTitle } = useContext(AuthContext)
 	const [open, setOpen] = useState(false)
 	// const matchDownMd = useMediaQuery(theme.breakpoints.down("md"));
-	const [, setCookie] = useCookies();
-	const { handleLogout } = useContext(AuthContext)
 	// if(location.search.includes("?code")) window.location.href='/'
 
 	const handleClose = () => {
@@ -86,79 +81,76 @@ const MainLayout = () => {
 	// const leftDrawerOpened = useSelector((state:any) => state.customization.opened);
 
 
-	useEffect(() => {
-		if (!isAuthenticated) {
-			return;
-		}
+	// useEffect(() => {
 
-		let isMount = true;
-		const source = axios.CancelToken.source();
+	// 	let isMount = true;
+	// 	const source = axios.CancelToken.source();
 
 		 
-		const getUser = async () => {
-			try {
-				const res = await axios.get(`${api}/login/${user?.sub}`, {
-					cancelToken: source.token
-				}).catch(() => {
-					handleLogout()
-				});
-				if (isMount) {
-					if(res?.data?.main.active === false){
-						handleLogout()
-					}
-					setMyInfo(() => res?.data?.main);
-					if (res?.data.token !== null) {
-						setCookie('auth-r-key', res?.data.token, { path: '/', maxAge: 36000 });
-						// axios.get(`${api}/comp-settings/${res.data?.main.company}`,{
-						// 	headers:{
-						// 		'authorization':  res.data.token
-						// 	}
-						// }).then((res)=>{
-						// 	setCompSettings(res.data)
-						// })
-					}
-				}
-			} catch (error) {
-				if (axios.isCancel(error)) {
-					console.log('Request canceled:', error.message);
-				} else {
-					handleLogout()
-				}
-			}
-		};
-		const getGuest = async () => {
-			try {
-				const res = await axios.get(`${api}/guestLogin/${user?.email?.toLowerCase()}`, {
-					cancelToken: source.token
-				}).catch(() => {
-					handleLogout()
-				})
-				if (isMount) {
-					setMyInfo(() => res?.data?.main);
-					if (res?.data.token !== null) {
-						setCookie('auth-r-key', res?.data.token, { path: '/', maxAge: 36000 });
-					}
-				}
-			} catch (error) {
-				if (axios.isCancel(error)) {
-					console.log('Request canceled:', error.message);
-				} else {
-					handleLogout()
-				}
-			}
-		};
+	// 	// const getUser = async () => {
+	// 	// 	try {
+	// 	// 		const res = await axios.get(`${api}/login/${user?.sub}`, {
+	// 	// 			cancelToken: source.token
+	// 	// 		}).catch(() => {
+	// 	// 			handleLogout()
+	// 	// 		});
+	// 	// 		if (isMount) {
+	// 	// 			if(res?.data?.main.active === false){
+	// 	// 				handleLogout()
+	// 	// 			}
+	// 	// 			setMyInfo(() => res?.data?.main);
+	// 	// 			if (res?.data.token !== null) {
+	// 	// 				setCookie('auth-r-key', res?.data.token, { path: '/', maxAge: 36000 });
+	// 	// 				// axios.get(`${api}/comp-settings/${res.data?.main.company}`,{
+	// 	// 				// 	headers:{
+	// 	// 				// 		'authorization':  res.data.token
+	// 	// 				// 	}
+	// 	// 				// }).then((res)=>{
+	// 	// 				// 	setCompSettings(res.data)
+	// 	// 				// })
+	// 	// 			}
+	// 	// 		}
+	// 	// 	} catch (error) {
+	// 	// 		if (axios.isCancel(error)) {
+	// 	// 			console.log('Request canceled:', error.message);
+	// 	// 		} else {
+	// 	// 			handleLogout()
+	// 	// 		}
+	// 	// 	}
+	// 	// };
+	// 	// const getGuest = async () => {
+	// 	// 	try {
+	// 	// 		const res = await axios.get(`${api}/guestLogin/${user?.email?.toLowerCase()}`, {
+	// 	// 			cancelToken: source.token
+	// 	// 		}).catch(() => {
+	// 	// 			handleLogout()
+	// 	// 		})
+	// 	// 		if (isMount) {
+	// 	// 			setMyInfo(() => res?.data?.main);
+	// 	// 			if (res?.data.token !== null) {
+	// 	// 				setCookie('auth-r-key', res?.data.token, { path: '/', maxAge: 36000 });
+	// 	// 			}
+	// 	// 		}
+	// 	// 	} catch (error) {
+	// 	// 		if (axios.isCancel(error)) {
+	// 	// 			console.log('Request canceled:', error.message);
+	// 	// 		} else {
+	// 	// 			handleLogout()
+	// 	// 		}
+	// 	// 	}
+	// 	// };
 
-		if (isMount && isAuthenticated) {
-			if(user?.isGuest) getGuest()
-			else getUser();
-		}
+	// 	// if (isMount && isAuthenticated) {
+	// 	// 	if(user?.isGuest) getGuest()
+	// 	// 	else getUser();
+	// 	// }
 
-		return () => {
-			isMount = false;
-			source.cancel('Component unmounted: Canceling request');
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [user, isAuthenticated])
+	// 	return () => {
+	// 		isMount = false;
+	// 		source.cancel('Component unmounted: Canceling request');
+	// 	}
+	// 	// eslint-disable-next-line react-hooks/exhaustive-deps
+	// }, [])
 	// if(location.search.includes("?code"))
 	// return<></>
 

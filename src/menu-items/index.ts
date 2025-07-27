@@ -1,8 +1,7 @@
-import admin from "./admin";
 import users from "./users";
 
 const menuItems = {
-	items: [admin, users]
+	items: [users]
 };
 
 export default menuItems;
